@@ -24,6 +24,7 @@ import {
   makePyramidMesh,
   makeSphereMesh,
   parseColor,
+  parseObj,
   perspectiveMatrix,
   rotateMatrix,
   setBatchSort,
@@ -225,6 +226,53 @@ function testClosestPointToFace(): void {
   expect(nearly(ac.distance, 3, 1e-9), "Kante AC -> Abstand 3");
 }
 
+function testParseObj(): void {
+  // Dreieck + Quad (Fan) + Linienkette (2 Segmente); unbekannte Direktiven
+  // und Kommentare werden ignoriert.
+  const obj = `
+# Kommentar
+v 0 0 0
+v 1 0 0
+v 1 0 1
+v 0 0 1
+f 1 2 3
+f 1 2 3 4
+l 1 2 3
+vn 0 0 1
+vt 0 0
+g Gruppe
+usemtl rot
+`;
+  const m = parseObj(obj);
+  expect(m.triangles.length === 3 * 9, "parseObj: 1 Dreieck + Quad-Fan = 3 Dreiecke");
+  expect(m.lines.length === 2 * 6, "parseObj: Linienkette -> 2 Segmente");
+
+  // Negative Indizes und a/b/c- bzw. a//c-Schreibweise.
+  const forms = `
+v 0 0 0
+v 2 0 0
+v 0 0 2
+f -3 -2 -1
+v 0 2 0
+f 1/10 2/20 4//30
+`;
+  const m2 = parseObj(forms);
+  expect(m2.triangles.length === 2 * 9, "parseObj: negative und a/b/c-Indizes");
+  expect(
+    m2.triangles[9] === 0 && m2.triangles[10] === 0 && m2.triangles[11] === 0,
+    "parseObj: Vertex-Mapping",
+  );
+
+  // Index ausserhalb des Bereichs -> Fehler.
+  let threw = false;
+  try {
+    parseObj("v 0 0 0\nv 1 0 0\nf 1 2 9\n");
+  } catch {
+    threw = true;
+  }
+  expect(threw, "parseObj: Index ausserhalb -> Fehler");
+}
+
 // Smoke-Test: drawMesh sammelt nur in den Batch (kein GL-Zugriff) und darf
 // ohne initialisierten Kontext nicht abstuerzen.
 function testMeshShapes(): void {
@@ -252,6 +300,7 @@ function main(): void {
   testInstancing();
   testParseColor();
   testClosestPointToFace();
+  testParseObj();
   testMeshShapes();
 
   if (fails === 0) {

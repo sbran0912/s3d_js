@@ -23,7 +23,8 @@ Web-Artefakt in `dist/<name>/`.
 │   ├── vorlage/      { index.html, main.ts }
 │   ├── beispiel/
 │   ├── instanzen/
-│   └── ray/
+│   ├── ray/
+│   └── rocket/       { index.html, main.ts, rocket.obj }
 ├── tests/            lib3d_test.ts (reines Bun-Skript)
 └── dist/             Build-Ausgabe je App (index.html + gebündeltes JS)
 ```
@@ -50,7 +51,13 @@ Eintrag in `APP_NAMES` (siehe unten).
 | `make test` | Führt die Bibliothekstests aus (`bun run tests/lib3d_test.ts`). |
 | `make clean` | Löscht `dist/`. |
 
-Verfügbare App-Namen: `vorlage`, `beispiel`, `instanzen`, `ray`.
+Verfügbare App-Namen: `vorlage`, `beispiel`, `instanzen`, `ray`, `rocket`.
+
+Die App `rocket` lädt ihr Mesh als Wavefront-OBJ (`./rocket.obj`, siehe
+`docs/library.md`, Abschnitt 4.3). Die `.obj` liegt neben `index.html` und wird
+per **Bun-Text-Import** (`with { type: "text" }`) in das Bundle eingebettet und
+mit `parseObj` synchron geparst – so funktioniert sie im Dev-Server **und** im
+Build identisch, ohne `fetch` und ohne Asset-Kopie.
 
 ### Beispiele
 
@@ -76,6 +83,12 @@ bun build apps/<name>/index.html --outdir dist/<name> --target browser
 Bun löst das in der HTML eingebundene `<script type="module" src="./main.ts">`
 sowie die `import`-Pfade auf `../../lib3d/lib3d` und `../../lib3d/bodies` auf
 und schreibt `index.html` + ein gehashtes `index-<hash>.js` nach `dist/<name>/`.
+
+**Externe Mesh-Assets:** Die `.obj`-Datei einer App liegt neben `index.html` und
+wird per Bun-Text-Import (`import obj from "./x.obj" with { type: "text" }`) in
+das Bundle eingebettet. Bun kümmert sich um Dev-Server und Build; im Makefile
+dient `APP_ASSETS` nur als Abhängigkeit, damit Änderungen an der `.obj` einen
+Rebuild auslösen.
 
 - **Bibliothek:** ändert sich eine Datei in `lib3d/`, sind alle
   Apps betroffen (`LIB_SRCS` als Abhängigkeit im Makefile).

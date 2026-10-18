@@ -266,6 +266,66 @@ transformFaces(body.faces, body.modelMatrix()); // lokale Faces -> Welt
 | Kollision/Raycast | nicht möglich | `body.faces`, `body.worldFaces()`, `raycastSegment` |
 | Geeignet für | reine Darstellung | Physik, Trefferabfragen, Picking |
 
+### 4.3 Externe Meshes laden (OBJ)
+
+Die Bibliothek kann Meshes im **Wavefront-OBJ**-Format laden. Es gibt bewusst
+**keine** Bau-/Speicher-Funktionen – Meshes werden außerhalb erzeugt (Editor wie
+Blender oder ein eigenes Skript) und hier eingelesen.
+
+Anders als in der C++-/Go-Fassung läuft die Bibliothek im **Browser** und kennt
+kein Dateisystem. Es gibt zwei Wege:
+
+```ts
+export function parseObj(text: string): Mesh;                // rein, synchron
+export async function loadObj(url: string): Promise<Mesh>;   // fetch + parseObj
+```
+
+**Empfohlen in diesem Projekt: die `.obj` als Text ins Bundle einbetten** (per
+Bun-Text-Import) und synchron mit `parseObj` parsen. Das funktioniert im
+Dev-Server **und** im Build identisch, ohne `fetch`:
+
+```ts
+import rocketObjText from "./rocket.obj" with { type: "text" };
+import { init, parseObj, startAnimation } from "../../lib3d/lib3d";
+
+const rocketMesh: Mesh = parseObj(rocketObjText);
+
+function draw(): void {
+  // ... drawMesh(rocketMesh, style, model) ...
+}
+
+init();
+startAnimation(draw);
+```
+
+Für echte HTTP-Assets (Datei wird vom Server ausgeliefert) gibt es `loadObj`
+(asynchron, da Browser nicht synchron lesen können):
+
+```ts
+const mesh = await loadObj("./assets/rocket.obj");
+```
+
+Parser-Umfang (bei beiden Wegen identisch):
+
+- `v x y z` → Vertex-Pool
+- `f …` → `triangles` (Dreiecke 1:1, Quads/Polygone per Fan-Triangulierung)
+- `l …` → `lines` (aufeinanderfolgende Paare)
+- Indizes **1-basiert und negativ**; `a/b/c` bzw. `a//c` erlaubt (UV/Normal-Teile
+  werden ignoriert)
+- Kommentare `#` und unbekannte Direktiven (`vn`, `vt`, `g`, `o`, `s`, `mtllib`,
+  `usemtl`) werden übersprungen
+
+Hinweise:
+- `parseObj` ist synchron und damit ohne Browser/GL testbar; `loadObj` ist
+  asynchron.
+- Koordinaten bleiben unverändert (OBJ ist typischerweise **Y-up**).
+- Für Drahtgitter müssen im OBJ **`l`-Linien** enthalten sein (Styles sind oft
+  `DrawStyle.Both`).
+- Für Kollision (`bodies`) das Mesh in **Endgröße** laden – nicht nur per
+  Modell-Matrix skalieren (sonst passen `worldFaces()` und Rendering nicht
+  zusammen). Mehrere OBJ-Objekte/Gruppen werden zu **einem** `Mesh`
+  zusammengeführt.
+
 ---
 
 ## 5. Rendermethoden

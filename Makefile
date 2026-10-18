@@ -13,10 +13,15 @@ BUN ?= bun
 
 BUILD := dist
 
-APP_NAMES := vorlage beispiel instanzen ray
+APP_NAMES := vorlage beispiel instanzen ray rocket
 APP_OUT   := $(addprefix $(BUILD)/,$(APP_NAMES))
 
 LIB_SRCS := $(wildcard lib3d/*.ts)
+
+# Externe Mesh-Assets je App (z. B. apps/rocket/rocket.obj). Sie werden von
+# der App per Text-Import ("with { type: \"text\" }") in das Bundle eingebettet;
+# die Datei hier nur als Abhaengigkeit, damit Aenderungen einen Rebuild ausloesen.
+APP_ASSETS := $(wildcard apps/*/*.obj)
 
 .PHONY: all build test clean
 
@@ -25,7 +30,7 @@ all: build
 build: $(APP_OUT)
 
 # Eine App -> ein Ausgabeordner mit index.html + gebuendeltem JS.
-$(BUILD)/%: apps/%/index.html apps/%/main.ts $(LIB_SRCS)
+$(BUILD)/%: apps/%/index.html apps/%/main.ts $(LIB_SRCS) $(APP_ASSETS)
 	rm -rf $@
 	mkdir -p $@
 	$(BUN) build apps/$*/index.html --outdir $@ --target browser

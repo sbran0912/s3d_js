@@ -33,6 +33,9 @@ export { colEq, parseColor, parseHex, rgb } from "./color";
 export type { Mesh } from "./mesh";
 export { makeCubeMesh, makeGridMesh, makePyramidMesh, makeSphereMesh } from "./mesh";
 
+// Mesh-Laden (Wavefront OBJ)
+export { loadObj, parseObj } from "./obj";
+
 // Renderer (Setup, Zustand, 3D-Primitive)
 export type { Fog, Instance, Scene } from "./renderer";
 export { DrawStyle, EffectMode, Key } from "./renderer";
