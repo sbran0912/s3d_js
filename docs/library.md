@@ -326,6 +326,25 @@ Hinweise:
   zusammen). Mehrere OBJ-Objekte/Gruppen werden zu **einem** `Mesh`
   zusammengeführt.
 
+#### Blender-Export (Hinweise)
+
+- **Normalen nicht nötig:** `vn` (und `vt`) werden ignoriert. Auch wenn die
+  `f`-Zeilen sie referenzieren (z. B. `f 1//1 2//2 3//3`), wird nur der Teil vor
+  dem ersten `/` gelesen. Die Normalen in Blender also einfach anlassen.
+- **Triangulate Faces** aktivieren → saubere Dreiecke (sonst Fan-Triangulierung
+  von Quads/ngons).
+- **Write Edges / Include Edges** aktivieren → schreibt `l`-Linien; nur so
+  bekommst du das Drahtgitter (Styles sind oft `DrawStyle.Both`).
+- **Achsen** mit den Defaults belassen (`Forward -Z`, `Up Y`) – passt zu
+  „+Y zeigt nach oben".
+- Objekte/Gruppen sowie `usemtl`/`mtllib` sind egal – alles wird zu **einem**
+  `Mesh` zusammengeführt.
+- **Shading bleibt flach:** Auch bei „Shade Smooth" leuchtet die Bibliothek pro
+  Dreiecksfläche aus (Normale aus `dFdx`/`dFdy`).
+- **Für `bodies`:** In Blender die Normalen konsistent nach außen richten
+  („Recalculate Outside") – die Kollision leitet die Flächennormale aus der
+  Windungsreihenfolge ab.
+
 ---
 
 ## 5. Rendermethoden
