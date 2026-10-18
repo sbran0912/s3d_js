@@ -10,6 +10,7 @@ import {
   multMatrix,
   parseObj,
   rotateMatrix,
+  scaleMesh,
   setBatchSort,
   startAnimation,
   translateMatrix,
@@ -61,19 +62,10 @@ const gridStyle: ShapeStyle = {
   lineWidth: 1,
 };
 
-// Mesh-Daten einmalig skalieren (Option B: keine Matrix-/Bibliotheksaenderung;
-// auch bodies-kompatibel, da die Faces aus der skalierten Geometrie entstehen).
-function scaledMesh(mesh: Mesh, s: number): Mesh {
-  return {
-    triangles: mesh.triangles.map((v) => v * s),
-    lines: mesh.lines.map((v) => v * s),
-  };
-}
-
 // Geladen: die Rakete (OBJ-Text ist Teil des Bundles -> synchrones Parsen),
-// anschliessend um rocketScale vergroessert.
+// anschliessend um rocketScale vergroessert (Mesh-Daten, siehe lib3d.scaleMesh).
 const rocketScale = 2;
-const rocketMesh: Mesh = scaledMesh(parseObj(rocketObjText), rocketScale);
+const rocketMesh: Mesh = scaleMesh(parseObj(rocketObjText), rocketScale);
 
 // Prozedural: Vergleichswuerfel + Bodengitter.
 const cubeMesh = makeCubeMesh(30, 30, 30);

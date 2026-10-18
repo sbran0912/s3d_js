@@ -31,7 +31,7 @@ export { colEq, parseColor, parseHex, rgb } from "./color";
 
 // Meshes
 export type { Mesh } from "./mesh";
-export { makeCubeMesh, makeGridMesh, makePyramidMesh, makeSphereMesh } from "./mesh";
+export { makeCubeMesh, makeGridMesh, makePyramidMesh, makeSphereMesh, scaleMesh } from "./mesh";
 
 // Mesh-Laden (Wavefront OBJ)
 export { loadObj, parseObj } from "./obj";

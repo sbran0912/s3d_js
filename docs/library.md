@@ -326,6 +326,28 @@ Hinweise:
   zusammen). Mehrere OBJ-Objekte/Gruppen werden zu **einem** `Mesh`
   zusammengeführt.
 
+#### Mesh skalieren (geladene Meshes)
+
+Zum Vergrößern/Verkleinern eines Meshes gibt es `scaleMesh` (Barrel-Export von
+`lib3d`). Es liefert eine **Kopie** mit allen Koordinaten (triangles und lines)
+um den Faktor `s` skaliert – uniform und um den Ursprung; das Eingabe-Mesh
+bleibt unverändert.
+
+```ts
+export function scaleMesh(mesh: Mesh, s: number): Mesh;
+
+const mesh = scaleMesh(parseObj(rocketObjText), 2);
+const body = makeBody(mesh, new Vec3());
+```
+
+**Wichtig:** Das Mesh **vor** `makeBody` skalieren (Skalierung der Mesh-Daten),
+damit `faces`/`worldFaces()` zur Geometrie passen. Eine Skalierung *nur* über
+die Modell-Matrix würde `bodies` nicht erfassen, weil `Body.modelMatrix()` nur
+`Translation · Rotation` rechnet. Eine Skalierungs-Matrix (`scaleMatrix`) gibt
+es bewusst nicht.
+
+Die App `rocket` nutzt `scaleMesh(mesh, rocketScale)`.
+
 #### Blender-Export (Hinweise)
 
 - **Normalen nicht nötig:** `vn` (und `vt`) werden ignoriert. Auch wenn die

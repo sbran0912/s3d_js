@@ -57,7 +57,8 @@ Die App `rocket` lädt ihr Mesh als Wavefront-OBJ (`./rocket.obj`, siehe
 `docs/library.md`, Abschnitt 4.3). Die `.obj` liegt neben `index.html` und wird
 per **Bun-Text-Import** (`with { type: "text" }`) in das Bundle eingebettet und
 mit `parseObj` synchron geparst – so funktioniert sie im Dev-Server **und** im
-Build identisch, ohne `fetch` und ohne Asset-Kopie.
+Build identisch, ohne `fetch` und ohne Asset-Kopie. Das geladene Mesh wird um
+`rocketScale` vergrößert (`scaleMesh`, Skalierung der Mesh-Daten).
 
 ### Beispiele
 

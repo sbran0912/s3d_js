@@ -27,6 +27,7 @@ import {
   parseObj,
   perspectiveMatrix,
   rotateMatrix,
+  scaleMesh,
   setBatchSort,
   strokeColor,
   strokeWidth,
@@ -273,6 +274,24 @@ f 1/10 2/20 4//30
   expect(threw, "parseObj: Index ausserhalb -> Fehler");
 }
 
+function testScaleMesh(): void {
+  const cube = makeCubeMesh(2, 2, 2);
+  const scaled = scaleMesh(cube, 2);
+
+  expect(
+    scaled.triangles.length === cube.triangles.length && scaled.lines.length === cube.lines.length,
+    "scaleMesh: Anzahl der Vertices bleibt gleich",
+  );
+  // Erste Wuerfel-Ecke ist (-1,-1,-1) -> skaliert (-2,-2,-2).
+  expect(
+    scaled.triangles[0] === cube.triangles[0] * 2 && scaled.triangles[1] === cube.triangles[1] * 2,
+    "scaleMesh: Triangle-Koordinate skaliert",
+  );
+  expect(scaled.lines[0] === cube.lines[0] * 2, "scaleMesh: Line-Koordinate skaliert");
+  // Eingabe-Mesh bleibt unveraendert.
+  expect(cube.triangles[0] === -1, "scaleMesh: Eingabe-Mesh unveraendert");
+}
+
 // Smoke-Test: drawMesh sammelt nur in den Batch (kein GL-Zugriff) und darf
 // ohne initialisierten Kontext nicht abstuerzen.
 function testMeshShapes(): void {
@@ -301,6 +320,7 @@ function main(): void {
   testParseColor();
   testClosestPointToFace();
   testParseObj();
+  testScaleMesh();
   testMeshShapes();
 
   if (fails === 0) {

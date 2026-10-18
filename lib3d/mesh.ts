@@ -174,3 +174,18 @@ export function makeGridMesh(size: number, cells: number): Mesh {
   }
   return m;
 }
+
+/**
+ * scaleMesh liefert eine Kopie des Meshes mit allen Koordinaten um den Faktor
+ * s skaliert (uniform, um den Ursprung). Das Eingabe-Mesh bleibt unveraendert.
+ *
+ * Fuer Kollision (bodies) das Mesh VOR makeBody skalieren, damit Geometrie und
+ * die daraus abgeleiteten Faces konsistent bleiben (Body.modelMatrix() skaliert
+ * nicht).
+ */
+export function scaleMesh(mesh: Mesh, s: number): Mesh {
+  return {
+    triangles: mesh.triangles.map((v) => v * s),
+    lines: mesh.lines.map((v) => v * s),
+  };
+}
