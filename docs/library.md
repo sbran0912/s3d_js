@@ -302,7 +302,7 @@ Für echte HTTP-Assets (Datei wird vom Server ausgeliefert) gibt es `loadObj`
 (asynchron, da Browser nicht synchron lesen können):
 
 ```ts
-const mesh = await loadObj("./assets/rocket.obj");
+const mesh = await loadObj("./rocket.obj");
 ```
 
 Parser-Umfang (bei beiden Wegen identisch):
@@ -610,7 +610,9 @@ startAnimation(draw);
 
 Weitere vollständige Beispiele liegen unter `apps/`:
 `beispiel` (Meshes + Szenenrotation), `vorlage` (Body + Gitter),
-`instanzen` (GPU-Instancing), `ray` (Body-Faces + Raycasting).
+`instanzen` (GPU-Instancing), `ray` (Body-Faces + Raycasting),
+`rocket` (Boids-Schwarm mit **geladenem** Raketen-Mesh; Port von
+`s3d_go/apps/rocket`).
 
 ---
 

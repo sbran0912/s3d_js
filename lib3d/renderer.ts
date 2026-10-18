@@ -462,6 +462,17 @@ function flushInstanced(g: GL): void {
   g.uniform1i(locInstanced, 1);
   g.uniform4f(locColor, 1, 1, 1, 1);
   for (const c of instCmds) {
+    // WebGL kennt keinen baseInstance-Parameter (drawArraysInstanced startet
+    // immer bei Instanz 0). Daher muessen die Instanz-Attribute pro Kommando
+    // auf den Start der jeweiligen Instanzen (instFirst) zeigen - sonst liest
+    // jedes Kommando ab Instanz 0 und mehrere Instancing-Draws vermischen sich.
+    const instOffset = c.instFirst * 20 * 4;
+    for (let k = 0; k < 4; k++) {
+      const loc = locInstModel + k;
+      g.vertexAttribPointer(loc, 4, g.FLOAT, false, iStride, instOffset + k * 4 * 4);
+    }
+    g.vertexAttribPointer(locInstColor, 4, g.FLOAT, false, iStride, instOffset + 16 * 4);
+
     g.uniformMatrix4fv(locView, false, c.view);
     g.uniformMatrix4fv(locProjection, false, c.proj);
     g.uniform1i(locMode, effectToMode(c.effect));

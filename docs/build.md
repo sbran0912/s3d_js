@@ -24,7 +24,7 @@ Web-Artefakt in `dist/<name>/`.
 │   ├── beispiel/
 │   ├── instanzen/
 │   ├── ray/
-│   └── rocket/       { index.html, main.ts, rocket.obj }
+│   └── rocket/       { index.html, main.ts, vehicle.ts, rocket.obj }
 ├── tests/            lib3d_test.ts (reines Bun-Skript)
 └── dist/             Build-Ausgabe je App (index.html + gebündeltes JS)
 ```
@@ -53,11 +53,17 @@ Eintrag in `APP_NAMES` (siehe unten).
 
 Verfügbare App-Namen: `vorlage`, `beispiel`, `instanzen`, `ray`, `rocket`.
 
-Die App `rocket` lädt ihr Mesh als Wavefront-OBJ (`./rocket.obj`, siehe
-`docs/library.md`, Abschnitt 4.3). Die `.obj` liegt neben `index.html` und wird
-per **Bun-Text-Import** (`with { type: "text" }`) in das Bundle eingebettet und
-mit `parseObj` synchron geparst – so funktioniert sie im Dev-Server **und** im
-Build identisch, ohne `fetch` und ohne Asset-Kopie. Das geladene Mesh wird um
+Die App `rocket` ist ein **1:1-Port von `s3d_go/apps/rocket`** (basiert auf
+`boids`): 80 Vehicles = geladenes Raketen-Mesh, sieben prozedurale
+Hindernis-Würfel + prozedurales Gitter, Maus zieht die Boids zum Zentrum. Sie
+liegt in zwei Dateien: `main.ts` (Aufbau/Zeichnen) und `vehicle.ts`
+(`FloatingBox`, `Vehicle` mit Flocking/Ausweichen).
+
+Das Mesh kommt als Wavefront-OBJ (`./rocket.obj`, siehe `docs/library.md`,
+Abschnitt 4.3): die `.obj` liegt neben `index.html` und wird per
+**Bun-Text-Import** (`with { type: "text" }`) in das Bundle eingebettet und mit
+`parseObj` synchron geparst – so funktioniert sie im Dev-Server **und** im Build
+identisch, ohne `fetch` und ohne Asset-Kopie. Das geladene Mesh wird um
 `rocketScale` vergrößert (`scaleMesh`, Skalierung der Mesh-Daten).
 
 ### Beispiele
