@@ -87,11 +87,11 @@ const pyrMesh = shiftMeshY(makePyramidMesh(90, 120), -60);
 
 // Body und zugehoeriger Zeichenstil bleiben zusammen (Reihenfolge-sicher).
 const bodies: { body: Body; style: ShapeStyle }[] = [
-  { body: makeBody(boxMesh, new Vec3(150, 0, 50), 0, 0, 0), style: boxRed },
-  { body: makeBody(boxMesh, new Vec3(0, 0, 100), 0, 0, 0), style: boxCyan },
-  { body: makeBody(boxMesh, new Vec3(-150, 0, -100), 0, 0, 0), style: boxRed },
-  { body: makeBody(boxMesh, new Vec3(-200, 0, 30), 0, Math.PI / 2, 0), style: boxCyan },
-  { body: makeBody(pyrMesh, new Vec3(100, 0, -100), 0, 0, 0), style: pyrWhite },
+  { body: makeBody(boxMesh, new Vec3(150, 0, 50)), style: boxRed },
+  { body: makeBody(boxMesh, new Vec3(0, 0, 100)), style: boxCyan },
+  { body: makeBody(boxMesh, new Vec3(-150, 0, -100)), style: boxRed },
+  { body: makeBody(boxMesh, new Vec3(-200, 0, 30), new Vec3(0, Math.PI / 2, 0)), style: boxCyan },
+  { body: makeBody(pyrMesh, new Vec3(100, 0, -100)), style: pyrWhite },
 ];
 
 /* ----

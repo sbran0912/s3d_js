@@ -219,32 +219,22 @@ export class Body {
   geometry: Mesh; // Zeichengeometrie (lokal)
   faces: Face[]; // lokale Faces (inkl. Normalen)
   pos: Vec3;
-  rotX: number;
-  rotY: number;
-  rotZ: number;
+  rot: Vec3; // Euler-Rotation (x, y, z)
 
-  constructor(
-    geometry: Mesh,
-    pos: Vec3,
-    rotX = 0,
-    rotY = 0,
-    rotZ = 0,
-  ) {
+  constructor(geometry: Mesh, pos: Vec3, rot: Vec3 = new Vec3()) {
     this.geometry = geometry;
     this.faces = buildFaces(geometry);
     this.pos = pos;
-    this.rotX = rotX;
-    this.rotY = rotY;
-    this.rotZ = rotZ;
+    this.rot = rot;
   }
 
   /** modelMatrix ist die Modellmatrix (Translation * Rotation). */
   modelMatrix(): Matrix4x4 {
     const t = translateMatrix(this.pos.x, this.pos.y, this.pos.z);
-    if (this.rotX === 0 && this.rotY === 0 && this.rotZ === 0) {
+    if (this.rot.x === 0 && this.rot.y === 0 && this.rot.z === 0) {
       return t;
     }
-    return multMatrix(t, rotateMatrix(this.rotX, this.rotY, this.rotZ));
+    return multMatrix(t, rotateMatrix(this.rot.x, this.rot.y, this.rot.z));
   }
 
   /** worldFaces liefert die Faces in Weltkoordinaten. */
@@ -260,9 +250,7 @@ export class Body {
 export function makeBody(
   geometry: Mesh,
   pos: Vec3,
-  rotX = 0,
-  rotY = 0,
-  rotZ = 0,
+  rot: Vec3 = new Vec3(),
 ): Body {
-  return new Body(geometry, pos, rotX, rotY, rotZ);
+  return new Body(geometry, pos, rot);
 }

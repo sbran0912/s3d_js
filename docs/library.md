@@ -225,13 +225,13 @@ class Body {
   geometry: Mesh;    // Zeichengeometrie (lokal)
   faces: Face[];     // lokale Faces inkl. Normalen
   pos: Vec3;
-  rotX: number; rotY: number; rotZ: number;
+  rot: Vec3;         // Euler-Rotation (x, y, z)
   modelMatrix(): Matrix4x4;   // Translation * Rotation
   worldFaces(): Face[];       // Faces in Weltkoordinaten
 }
 
 // Faces werden automatisch aus der Geometrie ermittelt:
-makeBody(geometry, pos, rotX = 0, rotY = 0, rotZ = 0): Body;
+makeBody(geometry, pos, rot = new Vec3()): Body;
 ```
 
 ```ts
@@ -242,7 +242,7 @@ let angle = 0;
 function draw(): void {
   beginScene(scene);
   angle += 0.01;
-  ballBody.rotY = angle;                          // Body drehen
+  ballBody.rot.y = angle;                         // Body drehen
   drawMesh(ballBody.geometry, ballStyle,          // Rendern wie ohne Body
            ballBody.modelMatrix());               // Körper-Transform nutzen
 }
@@ -260,9 +260,9 @@ transformFaces(body.faces, body.modelMatrix()); // lokale Faces -> Welt
 | | ohne Body | mit Body |
 | --- | --- | --- |
 | Typ | `Mesh` | `Body` (enthält `Mesh`) |
-| Erzeugen | `make*Mesh(...)` | `makeBody(mesh, pos, rotX, rotY, rotZ)` |
+| Erzeugen | `make*Mesh(...)` | `makeBody(mesh, pos, rot)` |
 | Zeichnen | `drawMesh(mesh, style, model)` | `drawMesh(body.geometry, style, body.modelMatrix())` |
-| Rotation | Modell-Matrix | `body.rotX/rotY/rotZ` + `modelMatrix()` |
+| Rotation | Modell-Matrix | `body.rot` (Vec3) + `modelMatrix()` |
 | Kollision/Raycast | nicht möglich | `body.faces`, `body.worldFaces()`, `raycastSegment` |
 | Geeignet für | reine Darstellung | Physik, Trefferabfragen, Picking |
 
@@ -600,7 +600,7 @@ let angle = 0;
 
 function draw(): void {
   beginScene(scene);
-  ball.rotY = angle += 0.01;
+  ball.rot.y = angle += 0.01;
   drawMesh(ball.geometry, ballStyle, ball.modelMatrix());
 }
 

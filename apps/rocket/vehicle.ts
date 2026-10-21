@@ -42,7 +42,7 @@ export class FloatingBox {
   /** update animiert die Box (Schweben + Rotation). t ist die Zeit in Sekunden. */
   update(t: number): void {
     this.body.pos = new Vec3(this.base.x, this.base.y + Math.sin(t + this.phase) * 6.0, this.base.z);
-    this.body.rotY += this.spin;
+    this.body.rot.y += this.spin;
   }
 }
 
@@ -83,13 +83,13 @@ export class Vehicle {
 
     // vel.y/mag muss in [-1,1] liegen (Schutz vor NaN durch Float-Rundung).
     const cosY = constrain(this.vel.y / mag, -1.0, 1.0);
-    this.body.rotX = Math.acos(cosY);
+    this.body.rot.x = Math.acos(cosY);
     if (magXZ < 0.0001) {
-      this.body.rotY = 0.0;
+      this.body.rot.y = 0.0;
     } else {
-      this.body.rotY = Math.atan2(this.vel.x / magXZ, this.vel.z / magXZ);
+      this.body.rot.y = Math.atan2(this.vel.x / magXZ, this.vel.z / magXZ);
     }
-    this.body.rotZ = 0.0;
+    this.body.rot.z = 0.0;
 
     this.heading = new Vec3(this.vel.x / mag, this.vel.y / mag, this.vel.z / mag);
   }
