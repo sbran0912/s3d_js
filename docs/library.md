@@ -47,7 +47,7 @@ Puffer-/Canvas-Verwaltung übernimmt die Bibliothek.
 
 | Funktion | Bedeutung |
 | --- | --- |
-| `init()` | Canvas, WebGL2-Kontext, Shader, Batch-Zustand. Die Canvas-Größe folgt dem Fenster (`window.innerWidth/innerHeight`). Wirft bei Fehlern. |
+| `init()` | Canvas, WebGL2-Kontext, Shader, Batch-Zustand. Die logische Canvas-Größe folgt dem Fenster (`window.innerWidth/innerHeight`); der Backing-Store wird um `devicePixelRatio` skaliert (scharf auf HiDPI/Retina). Wirft bei Fehlern. |
 | `startAnimation(draw)` | Startet die Schleife (`requestAnimationFrame`); `draw` wird jedes Frame aufgerufen. |
 | `noLoop()` | Stoppt die Animations-Schleife. |
 | `getWidth()` / `getHeight()` | Canvas-Größe in Pixeln. |

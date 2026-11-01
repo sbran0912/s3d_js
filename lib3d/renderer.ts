@@ -608,23 +608,31 @@ function onKeyUp(e: KeyboardEvent): void {
   keysDown.delete(e.code);
 }
 
-// applyViewportSize setzt Canvas-Groesse und Viewport auf die Fenstergroesse.
+// applyViewportSize setzt Canvas-Backing-Store und Viewport. Die logische
+// (CSS-)Groesse folgt dem Fenster; der Backing-Store wird um devicePixelRatio
+// skaliert, damit die WebGL-Ausgabe auf HiDPI-Displays in nativer Aufloesung
+// vorliegt (sonst skaliert der Browser hoch und alles wirkt unscharf).
 function applyViewportSize(): void {
   if (!canvas || !gl) {
     return;
   }
-  frameW = window.innerWidth;
+  const dpr = window.devicePixelRatio || 1;
+  frameW = window.innerWidth; // logische (CSS-)Breite
   frameH = window.innerHeight;
-  canvas.width = frameW;
-  canvas.height = frameH;
+  canvas.width = Math.round(frameW * dpr);
+  canvas.height = Math.round(frameH * dpr);
   canvas.style.width = `${frameW}px`;
   canvas.style.height = `${frameH}px`;
-  gl.viewport(0, 0, frameW, frameH);
+  gl.viewport(0, 0, canvas.width, canvas.height);
 }
 
 function onResize(): void {
   applyViewportSize();
 }
+
+// matchMedia-hoerter, der eine geaenderte devicePixelRatio (z. B. Fenster auf
+// einen Monitor mit anderer Skalierung ziehen) ohne resize-Event abfaengt.
+let dprMedia: MediaQueryList | null = null;
 
 // =================================================================
 // BATCH-SAMMEL-HELFER (siehe renderer_internal.ts)
@@ -950,8 +958,9 @@ export function setLightDirection(x: number, y: number, z: number): void {
 
 /**
  * init initialisiert Canvas, WebGL2-Kontext, Shader und Batch-Zustand.
- * Die Canvas-Groesse folgt dem Fenster (window.innerWidth/innerHeight).
- * Wirft einen Fehler bei Problemen.
+ * Die logische Canvas-Groesse folgt dem Fenster (window.innerWidth/innerHeight);
+ * der Backing-Store wird um devicePixelRatio skaliert (HiDPI / Retina), damit
+ * die Ausgabe scharf bleibt. Wirft einen Fehler bei Problemen.
  */
 export function init(): void {
   if (typeof document === "undefined" || !document.body) {
@@ -1061,6 +1070,11 @@ export function init(): void {
   window.addEventListener("keydown", onKeyDown);
   window.addEventListener("keyup", onKeyUp);
   window.addEventListener("resize", onResize);
+
+  // devicePixelRatio-Aenderungen (Fenster auf Monitor mit anderer Skalierung
+  // ziehen) loesen teils kein resize aus - via matchMedia abfangen.
+  dprMedia = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+  dprMedia.addEventListener("change", onResize);
 }
 
 /** startAnimation startet die Animations-Schleife. */
